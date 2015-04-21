@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConsoleApplication1
+namespace TextSearching
 {
     /// <summary>
     /// String matching given a pattern x, find all its locations in any text y
@@ -31,11 +31,11 @@ namespace ConsoleApplication1
             while (pos <= text.Length - pattern.Length)
             {
                 var i = 0;
-                while (i <= text.Length && text[i] == pattern[pos + i])
+                while (i < pattern.Length && pattern[i] == text[pos + i])
                 {
                     i++;
                 }
-                if (i == text.Length)
+                if (i == pattern.Length)
                 {
                     posList.Add(pos);
                 }
