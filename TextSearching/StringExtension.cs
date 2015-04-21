@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace TextSearching
 {
@@ -54,12 +56,12 @@ namespace TextSearching
 
             var patternHash = Hash(pattern);
             var posList = new List<int>();
-
-            for (var pos = 0; pos < text.Length - pattern.Length; pos++)
+            var pos = 0;
+            while (pos <= text.Length - pattern.Length)
             {
-                if (patternHash != Hash(text.Substring(pos, pattern.Length))) continue;
-
-                CheckPattern(text, pattern, pos, posList);
+                if ((patternHash == Hash(text.Substring(pos, pattern.Length)))
+                    && (CheckPattern(text, pattern, pos))) posList.Add(pos);
+                pos++;
             }
 
             return posList.ToArray();
@@ -75,10 +77,7 @@ namespace TextSearching
         private static bool CheckPattern(string text, string pattern, int pos)
         {
             var i = 0;
-            while (i < pattern.Length && pattern[i] == text[pos + i])
-            {
-                i++;
-            }
+            while (i < pattern.Length && pattern[i] == text[pos + i]) i++;
             return (i == pattern.Length);
         }
 
@@ -89,22 +88,10 @@ namespace TextSearching
         /// <returns>a unique number representing the string</returns>
         private static long Hash(string text)
         {
-            return -1;
+            var asciiBytes = Encoding.ASCII.GetBytes(text);
+
+            return asciiBytes.Aggregate<byte, long>(7, (current, t) => current * 31 + t);
         }
-        //http://en.wikipedia.org/wiki/Horner's_method
-        //double HornerEvaluate (double x, double * CoefficientsOfPolynomial, unsigned int DegreeOfPolynomial)
-        //{
-        //    /*
-        //        We want to evaluate the polynomial in x, of coefficients CoefficientsOfPolynomial, using Horner's method.
-        //        The result is stored in dbResult.
-        //    */
-        //    double dbResult = 0.;
-        //    int i;
-        //    for(i = 0; i <= DegreeOfPolynomial; i++)
-        //    {
-        //        dbResult = dbResult * x + CoefficientsOfPolynomial[i];
-        //    }
-        //    return dbResult;
-        //}
+
     }
 }

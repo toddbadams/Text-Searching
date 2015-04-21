@@ -5,15 +5,16 @@ namespace TextSearching.Tests
     [TestFixture]
     public class FixedStringSearchExtensionTest
     {
+        private const string Text = "cacgtatatatgcgttataat";
+        private const string Pattern = "tata";
+
         [TestCase]
         public void NaiveSearch_Should_Find_All_Occurances()
         {
             // arrange
-            var text = "cacgtatatatgcgttataat";
-            var pattern = "tata";
 
             // act
-            var occurances = text.NaiveSearch(pattern);
+            var occurances = Text.NaiveSearch(Pattern);
 
             // assert
             Assert.IsNotNull(occurances);
@@ -27,11 +28,9 @@ namespace TextSearching.Tests
         public void HashedSearch_Should_Find_All_Occurances()
         {
             // arrange
-            var text = "cacgtatatatgcgttataat";
-            var pattern = "tata";
 
             // act
-            var occurances = text.HashedSearch(pattern);
+            var occurances = Text.HashedSearch(Pattern);
 
             // assert
             Assert.IsNotNull(occurances);
