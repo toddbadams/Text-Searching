@@ -24,15 +24,13 @@ namespace TextSearching
         /// <returns>array of position</returns>
         public static int[] NaiveSearch(this string text, string pattern)
         {
-            if (string.IsNullOrEmpty(text)
-                || string.IsNullOrEmpty(pattern)
-                || pattern.Length > text.Length) return new int[0];
+            if (!IsValid(text, pattern)) return new int[0];
 
             var pos = 0;
             var posList = new List<int>();
             while (pos <= text.Length - pattern.Length)
             {
-                if (CheckPattern(text, pattern, pos)) posList.Add(pos);
+                if (PatternMatchesTextAtPosition(text, pattern, pos)) posList.Add(pos);
                 pos++;
             }
             return posList.ToArray();
@@ -50,17 +48,15 @@ namespace TextSearching
         /// <returns>array of position</returns>
         public static int[] HashedSearch(this string text, string pattern)
         {
-            if (string.IsNullOrEmpty(text)
-                || string.IsNullOrEmpty(pattern)
-                || pattern.Length > text.Length) return new int[0];
+            if (!IsValid(text, pattern)) return new int[0];
 
-            var patternHash = Hash(pattern);
-            var posList = new List<int>();
             var pos = 0;
+            var posList = new List<int>();
+            var patternHash = Hash(pattern);
             while (pos <= text.Length - pattern.Length)
             {
                 if ((patternHash == Hash(text.Substring(pos, pattern.Length)))
-                    && (CheckPattern(text, pattern, pos))) posList.Add(pos);
+                    && (PatternMatchesTextAtPosition(text, pattern, pos))) posList.Add(pos);
                 pos++;
             }
 
@@ -72,12 +68,12 @@ namespace TextSearching
         /// </summary>
         /// <param name="text">text being search</param>
         /// <param name="pattern">pattern to find in text</param>
-        /// <param name="pos">position on text</param>
+        /// <param name="position">position on text</param>
         /// <returns>true if matched</returns>
-        private static bool CheckPattern(string text, string pattern, int pos)
+        private static bool PatternMatchesTextAtPosition(string text, string pattern, int position)
         {
             var i = 0;
-            while (i < pattern.Length && pattern[i] == text[pos + i]) i++;
+            while (i < pattern.Length && pattern[i] == text[position + i]) i++;
             return (i == pattern.Length);
         }
 
@@ -88,10 +84,21 @@ namespace TextSearching
         /// <returns>a unique number representing the string</returns>
         private static long Hash(string text)
         {
-            var asciiBytes = Encoding.ASCII.GetBytes(text);
-
-            return asciiBytes.Aggregate<byte, long>(7, (current, t) => current * 31 + t);
+            var hash = Encoding.ASCII.GetBytes(text).Aggregate<byte, long>(7, (current, t) => current * 31 + t);
+            return hash;
         }
 
+        /// <summary>
+        /// Is the text and pattern a valid pair?
+        /// </summary>
+        /// <param name="text">text being search</param>
+        /// <param name="pattern">pattern to find in text</param>
+        /// <returns>true if valid</returns>
+        private static bool IsValid(string text, string pattern)
+        {
+            return !(string.IsNullOrEmpty(text)
+                    || string.IsNullOrEmpty(pattern)
+                    || pattern.Length > text.Length);
+        }
     }
 }
